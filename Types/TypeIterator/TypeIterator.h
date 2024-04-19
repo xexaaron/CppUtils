@@ -35,6 +35,9 @@ namespace Utility {
             ((result |= std::is_same_v<T, Pack>), ...);
             return result;
         }
+
+        using First = std::tuple_element_t<0, std::tuple<Pack...>>;
+        using Last = std::tuple_element_t<sizeof...(Pack) - 1, std::tuple<Pack...>>;
     };
 
     template<typename...>
@@ -121,5 +124,8 @@ namespace Utility {
 
         template <typename T>
         constexpr static bool Has() { return Iterator::template Has<T>();}
+
+        using First = typename Iterator::First;
+        using Last = typename Iterator::Last;
     };
 }

@@ -23,3 +23,5 @@
  * @note Enum highlighting when defining an AdvancedEnum does not work.
  */
 #define AdvancedEnum(eName, eType, ...) CREATE_ENUM(eName, eType, __VA_ARGS__)
+
+// using AdvancedEnum instead of Enum due to windows naming conflict.
