@@ -24,7 +24,7 @@ int main() {
         std::cout << "Type: " << GetTypename<T>() << "\n"; 
     });
 
-    std::cout << std::endl;
+    std::cout << std::endl; 
 
     std::cout << "type_iterator::IterateExcluding<float, double, char> : " << std::endl << std::endl;
     Iterables::IterateExcluding<float, double, char>([]<typename T>() { 

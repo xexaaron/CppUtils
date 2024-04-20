@@ -39,11 +39,20 @@ namespace Utility {
         }
 
         template <typename First, typename Second, typename... Rest>
-        constexpr static bool Has() {
+        constexpr static bool HasAny() {
             bool result = false;
             result |= Has<First>();
             result |= Has<Second>();
             ((result |= Has<Rest>()), ...);
+            return result;
+        }
+
+        template <typename First, typename Second, typename... Rest>
+        constexpr static bool HasAll() {
+            bool result = true;
+            result = result && Has<First>();
+            result = result && Has<Second>();
+            ((result = result && Has<Rest>()), ...);
             return result;
         }
 
@@ -111,7 +120,7 @@ namespace Utility {
         using Last = typename iterator::Last;
 
        template <typename... SubTypes>
-       using Subset = std::enable_if_t<iterator::template Has<SubTypes...>(), type_iterator<SubTypes...>>;
+       using Subset = std::enable_if_t<iterator::template HasAll<SubTypes...>(), type_iterator<SubTypes...>>;
 
         
         /**
@@ -147,7 +156,7 @@ namespace Utility {
         */
         template <typename... Exclusions, typename Fn>
         static void IterateExcluding(Fn&& fn) {
-            static_assert(iterator::template Has<Exclusions...>(), "type_iterator does not contain excluded types");
+            static_assert(HasAll<Exclusions...>(), "type_iterator does not contain excluded types");
             using iterables = typename remove_types_from_list<type_list<Exclusions...>, iterator>::type;
             iterables::Iterate(std::forward<Fn>(fn));
         }
@@ -167,7 +176,7 @@ namespace Utility {
         */
         template <typename... Inclusions, typename Fn>
         static void IterateOver(Fn&& fn) {
-            static_assert(iterator::template Has<Inclusions...>(), "type_iterator does not contain included types");
+            static_assert(HasAll<Inclusions...>(), "type_iterator does not contain included types");
             type_list<Inclusions...>::Iterate(std::forward<Fn>(fn));
         }
 
@@ -189,12 +198,20 @@ namespace Utility {
         constexpr static bool Has() { return iterator::template Has<T>();}
 
         /**
-         * @brief Check if an iterator contains each type.
+         * @brief Check if an iterator contains any type provided.
          * @tparam Variadic list of types
          * @return bool 
-         */
+        */
         template <typename First, typename Second, typename... Rest>
-        constexpr static bool Has() { return iterator::template Has<First, Second, Rest...>();}
+        constexpr static bool HasAny() { return iterator::template HasAny<First, Second, Rest...>();}
+        
+        /**
+         * @brief Check if an iterator contains all types provided.
+         * @tparam Variadic list of types
+         * @return bool 
+        */
+        template <typename First, typename Second, typename... Rest>
+        constexpr static bool HasAll() { return iterator::template HasAll<First, Second, Rest...>();}
 
         /**
          * @brief Get all types in a string format.
