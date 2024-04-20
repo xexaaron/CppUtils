@@ -38,11 +38,18 @@ namespace Utility {
             return result;
         }
 
+        template <typename First, typename Second, typename... Rest>
+        constexpr static bool Has() {
+            bool result = false;
+            result |= Has<First>();
+            result |= Has<Second>();
+            ((result |= Has<Rest>()), ...);
+            return result;
+        }
+
         using First = std::tuple_element_t<0, std::tuple<Types...>>;
         using Last = std::tuple_element_t<sizeof...(Types) - 1, std::tuple<Types...>>;
     };
-
-    
 
     template<typename...>
     struct join {};
@@ -87,9 +94,13 @@ namespace Utility {
 
     #pragma endregion
 
+
     /**
      * @brief Iterator for iterating a variadic number of types.
+     * 
      * @tparam ...Types List of types to be iterable.
+     * 
+     * @note Essentially a wrapper for type_list with extended functionality. like exclusions, and stringifying.
     */
     template <typename... Types>
     class type_iterator {
@@ -99,26 +110,67 @@ namespace Utility {
         using First = typename iterator::First;
         using Last = typename iterator::Last;
 
+       template <typename... SubTypes>
+       using Subset = std::enable_if_t<iterator::template Has<SubTypes...>(), type_iterator<SubTypes...>>;
+
+        
         /**
-         * @brief Iterate over an empty instance of each type.
+         * @brief Iterate over an empty instance of all types in the iterator.
          * 
          * @tparam Fn Templated Lambda function -> []<>(){}; 
-         * @tparam ...Exclusions Types to be excluded from iteration. Leaving parameter as empty means that all types will be iterated.
          * 
-         * @note Example - @code TypeIterator<Types...>::Iterate<Exclusions...>([]<typename T>() {
+         * @param fn Function to be called on each iteration.
+         * 
+         * @param Example -> @code type_iterator<Types...>::IterateAll([]<typename T>() {
          *      T::StaticMethod();
          *      TemplateFunction<T>();
          *  }); @endcode
          * 
-         * @param fn Function to be called on each iteration.
          */
+        template <typename Fn>
+        static void IterateAll(Fn&& fn) {
+            iterator::Iterate(std::forward<Fn>(fn));
+        }
+
+        /**
+         * @brief Iterate over an empty instance of all types not excluded by the template parameters.
+         * 
+         * @tparam Fn Templated Lambda function -> []<>(){}; 
+         * @tparam ...Exclusions List of types to be excluded
+         * 
+         * @param fn Function to be called on each iteration.
+         * 
+         * @param Example -> @code type_iterator<Types...>::IterateExcluding<Exclusions...>([]<typename T>() {
+         *      T::StaticMethod();
+         *      TemplateFunction<T>();
+         *  }); @endcode
+        */
         template <typename... Exclusions, typename Fn>
-        static void Iterate(Fn&& fn) {
-            // Determine the list of types to iterate over, excluding specified types
+        static void IterateExcluding(Fn&& fn) {
+            static_assert(iterator::template Has<Exclusions...>(), "type_iterator does not contain excluded types");
             using iterables = typename remove_types_from_list<type_list<Exclusions...>, iterator>::type;
-            // Forward the function to Iterables::Iterate
             iterables::Iterate(std::forward<Fn>(fn));
         }
+
+        /**
+         * @brief Iterate over an empty instance of all types specifically included in the template parameters.
+         * 
+         * @tparam Fn Templated Lambda function -> []<>(){}; 
+         * @tparam ...Inclusions List of types to be iterated over.
+         * 
+         * @param fn Function to be called on each iteration.
+         *  
+         * @param Example -> @code type_iterator<Types...>::IterateOver<Inclusions...>([]<typename T>() {
+         *      T::StaticMethod();
+         *      TemplateFunction<T>();
+         *  }); @endcode
+        */
+        template <typename... Inclusions, typename Fn>
+        static void IterateOver(Fn&& fn) {
+            static_assert(iterator::template Has<Inclusions...>(), "type_iterator does not contain included types");
+            type_list<Inclusions...>::Iterate(std::forward<Fn>(fn));
+        }
+
         /**
          * @brief Get the number of types that are iterable.
          * 
@@ -126,19 +178,44 @@ namespace Utility {
          */
         constexpr static size_t Count() { return iterator::Count(); }
 
+        /**
+         * @brief Check if the iterator contains a type.
+         * 
+         * @tparam T Type to check.
+         * 
+         * @return bool
+         */
         template <typename T>
         constexpr static bool Has() { return iterator::template Has<T>();}
 
-        static std::string TypeString() {
+        /**
+         * @brief Check if an iterator contains each type.
+         * @tparam Variadic list of types
+         * @return bool 
+         */
+        template <typename First, typename Second, typename... Rest>
+        constexpr static bool Has() { return iterator::template Has<First, Second, Rest...>();}
+
+        /**
+         * @brief Get all types in a string format.
+         * 
+         * @param just_types Boolean if you want to remove the type_list<> part from the string
+         * and just have a result of int, float, ..., etc. 
+         * 
+         * @return std::string -> "type_list<int, float, ...>"
+         */
+        static std::string String(bool just_types = false) {
             std::string out;
-            out += "type_list<";
-            Iterate([&out]<typename T>(){
+            IterateAll([&out]<typename T>(){
                 out += GetTypename<T>(); 
                 if (!std::is_same_v<T, Last>) {
                     out += ",";
                 }
             });
-            out += ">";
+            if (!just_types) {
+                out = "type_list<" + out;
+                out += ">";
+            }
             return out; 
         }
 

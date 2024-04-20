@@ -4,29 +4,46 @@
 using namespace Utility;
 
 int main() {
+    // Declare an alias for your type_iterator
     using Iterables = type_iterator<int, float, double, char, size_t>;
 
-    int in = 0;
+    std::cout << std::endl;
 
-    if (Iterables::Has<int>()) { // if int
-            Iterables::Iterate<int>([&in]<typename T>() { // exclude int and pass as param instead and...
-            std::cout << "Type: " << GetTypename<T>() << "\n"; 
-            if (std::is_same_v<T, Iterables::Last>) { // ...use int on the last iteration of the function
-                std::cout << "Type: " << GetTypename<decltype(in)>() << "\n"; 
-            } 
-        });
-        // expected output :
-        // Type: float
-        // Type: double
-        // Type: char
-        // Type: size_t
-        // Type: int
-    }
+    std::cout << Iterables::String() << std::endl << std::endl;
+
+    // Iterate all types in the list
+    std::cout << "type_iterator::IterateAll : " << std::endl << std::endl;
+    Iterables::IterateAll([]<typename T>() { 
+        std::cout << "Type: " << GetTypename<T>() << "\n"; 
+    });
     
     std::cout << std::endl;
 
-    std::cout << "Types List Printing" << std::endl;
-    std::cout << Iterables::TypeString() << std::endl;
+    std::cout << "type_iterator::IterateOver<float, double, char> : " << std::endl << std::endl;
+    Iterables::IterateOver<float, double, char>([]<typename T>() { 
+        std::cout << "Type: " << GetTypename<T>() << "\n"; 
+    });
+
+    std::cout << std::endl;
+
+    std::cout << "type_iterator::IterateExcluding<float, double, char> : " << std::endl << std::endl;
+    Iterables::IterateExcluding<float, double, char>([]<typename T>() { 
+        std::cout << "Type: " << GetTypename<T>() << "\n"; 
+    });
+
+    std::cout << std::endl;
+
+    std::cout << "Types List Printing : " << std::endl << std::endl;
+    std::cout << "just_types = false  : " << Iterables::String() << std::endl;
+    std::cout << "just_types = true   : " << Iterables::String(true) << std::endl;
+
+     std::cout << std::endl;
+
+    std::cout << "type_iterator::Subset<unsigned long long, int>::IterateAll " << std::endl << std::endl;
+    Iterables::Subset<unsigned long long, int>::IterateAll([]<typename T>() { 
+        std::cout << "Type: " << GetTypename<T>() << "\n"; 
+    });
+
 
     return 0;
 }

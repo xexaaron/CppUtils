@@ -8,6 +8,8 @@
         "xlocale": "cpp",
         "xutility": "cpp",
         "xtr1common": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
     }
 }
