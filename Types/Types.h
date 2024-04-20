@@ -65,4 +65,25 @@ namespace Utility {
 
         return type_name;
     }
+
+    /* Tempalte specializations for primitive types */
+    template <> std::string GetTypename<int>(unsigned int verbosity) { return "int"; }
+    template <> std::string GetTypename<float>(unsigned int verbosity) { return "float"; }
+    template <> std::string GetTypename<double>(unsigned int verbosity) { return "double"; }
+    template <> std::string GetTypename<char>(unsigned int verbosity) { return "char"; }
+    template <> std::string GetTypename<bool>(unsigned int verbosity) {  return "bool"; }
+    template <> std::string GetTypename<short>(unsigned int verbosity) { return "short"; }
+    template <> std::string GetTypename<unsigned short>(unsigned int verbosity) { return "unsigned short"; }
+    template <> std::string GetTypename<long>(unsigned int verbosity) { return "long"; }
+    template <> std::string GetTypename<unsigned long>(unsigned int verbosity) { return "unsigned long"; }
+    template <> std::string GetTypename<long long>(unsigned int verbosity) { return "long long"; }
+    template <> std::string GetTypename<unsigned long long>(unsigned int verbosity) { return "unsigned long long"; }
+    template <> std::string GetTypename<wchar_t>(unsigned int verbosity) { return "wchar_t"; }
+
+    /* Template sepcializations for verbose aliases or other */
+    template <> std::string GetTypename<std::string>(unsigned int verbosity) { return "std::string"; }
+    template <> std::string GetTypename<char16_t>(unsigned int verbosity) { return "char16_t"; }
+    template <> std::string GetTypename<char32_t>(unsigned int verbosity) { return "char32_t"; }
+
 }
+
