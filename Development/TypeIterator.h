@@ -5,7 +5,7 @@
 #include <tuple>
 #include <utility>
 
-#include "../Types.h"
+#include "../Types/Types.h"
 
 namespace Utility {
  
@@ -183,10 +183,10 @@ namespace Utility {
 
         static std::string String(bool just_types = false) {
             std::string out;
-            Iterate([&out]<typename T>(){
+            IterateAll([&out]<typename T>(){
                 out += GetTypename<T>(); 
                 if (!std::is_same_v<T, Last>) {
-                    out += ", ";
+                    out += ",";
                 }
             });
             if (!just_types) {

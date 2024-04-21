@@ -3,47 +3,98 @@
 
 using namespace Utility;
 
+#define SPACER std::cout << "---------------------------------------" << std::endl
+
+#define LOG_RESULT(expression, x) \
+    do { \
+        if (expression) { \
+            std::cout << std::endl; \
+            std::cout << "\033[32m" << x << "\nSucceeded\033[0m" << std::endl; /* Green color for true */ \
+        } else { \
+            std::cout << std::endl; \
+            std::cout << "\033[31m" << x << "\nFailed \033[0m" << std::endl; /* Red color for false */ \
+        } \
+    } while (0)
+
+#define LOG_HEADER(x) \
+    do { \
+        SPACER; \
+        std::cout << "\033[35m" << x << "\033[0m" << std::endl; \
+        SPACER; \
+    } while (0)
+
 int main() {
     // Declare an alias for your type_iterator
     using Iterables = type_iterator<int, float, double, char, size_t>;
 
-    std::cout << std::endl;
+    {
+        LOG_HEADER("Normal iteration over all types");
 
-    std::cout << Iterables::String() << std::endl << std::endl;
+        bool passed = true;
+        std::string expected_type_array[5] = {
+            "int", "float", "double", "char", "unsigned long long"
+        };
+        size_t i = 0;
 
-    // Iterate all types in the list
-    std::cout << "type_iterator::IterateAll : " << std::endl << std::endl;
-    Iterables::IterateAll([]<typename T>() { 
-        std::cout << "Type: " << GetTypename<T>() << "\n"; 
-    });
+        Iterables::Iterate([&]<typename T>() { // Normal iteration over all types
+            std::cout << "Type: " << GetTypename<T>() << "\n"; 
+            passed = GetTypename<T>() == expected_type_array[i++];
+        });
+        
+        LOG_RESULT(passed, "Expected : int, float, double, char, unsigned long long");
+    }
+
+    {
+        LOG_HEADER("Exclusive iteration");
+        
+        bool passed = true;
+        std::string expected_type_array[2] = {
+            "int", "unsigned long long" 
+        };
+        size_t i = 0;
+
+        Iterables::Iterate<float, double, char>([&]<typename T>() { // Exclusive iteration
+            std::cout << "Type: " << GetTypename<T>() << "\n"; 
+            passed = GetTypename<T>() == expected_type_array[i++];
+        });
+
+       LOG_RESULT(passed, "Expected : int, unsigned long long");
+    }
+
+    {
+        LOG_HEADER("Subset iteration over all types");
+        
+        bool passed = true;
+        std::string expected_type_array[2] = {
+            "unsigned long long", "int"
+        };
+        size_t i = 0;
+
+        Iterables::Subset<unsigned long long, int>::Iterate([&]<typename T>() { // Subset iteration over all types in the subset
+            std::cout << "Type: " << GetTypename<T>() << "\n"; 
+            passed = GetTypename<T>() == expected_type_array[i++];
+        });
     
-    std::cout << std::endl;
+        LOG_RESULT(passed, "Expected : unsigned long long, int");
+    }
 
-    std::cout << "type_iterator::IterateOver<float, double, char> : " << std::endl << std::endl;
-    Iterables::IterateOver<float, double, char>([]<typename T>() { 
-        std::cout << "Type: " << GetTypename<T>() << "\n"; 
-    });
+    {
+        LOG_HEADER("type_iterator::String(false)");
 
-    std::cout << std::endl; 
+        std::cout << Iterables::String(false) << std::endl;
+        std::string expected = "type_list<int, float, double, char, unsigned long long>";
 
-    std::cout << "type_iterator::IterateExcluding<float, double, char> : " << std::endl << std::endl;
-    Iterables::IterateExcluding<float, double, char>([]<typename T>() { 
-        std::cout << "Type: " << GetTypename<T>() << "\n"; 
-    });
+        LOG_RESULT(expected == Iterables::String(), "Expected string : type_list<int, float, double, char, unsigned long long>");
+    }
+    
+    {
+        LOG_HEADER("type_iterator::String(true)");
+        
+        std::cout << Iterables::String(true) << std::endl;
 
-    std::cout << std::endl;
-
-    std::cout << "Types List Printing : " << std::endl << std::endl;
-    std::cout << "just_types = false  : " << Iterables::String() << std::endl;
-    std::cout << "just_types = true   : " << Iterables::String(true) << std::endl;
-
-     std::cout << std::endl;
-
-    std::cout << "type_iterator::Subset<unsigned long long, int>::IterateAll " << std::endl << std::endl;
-    Iterables::Subset<unsigned long long, int>::IterateAll([]<typename T>() { 
-        std::cout << "Type: " << GetTypename<T>() << "\n"; 
-    });
-
-
+        std::string expected = "int, float, double, char, unsigned long long";
+        LOG_RESULT(expected == Iterables::String(true), "Expected string : int, float, double, char, unsigned long long");
+    }
+    
     return 0;
 }
