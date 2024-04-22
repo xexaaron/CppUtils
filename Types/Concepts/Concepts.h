@@ -1,16 +1,25 @@
-#if __cplusplus == 202002L
-    #include <concepts>
+#pragma once
 
-    /* CAre*<Types...> Pattern :
-            template <typename T> 
-            concept CAre* = (... && std::is_*<Types>);
-    */
+#include <concepts>
 
-    template <typename... Types>
-    concept CAreDefaultConstructible = (... && std::is_default_constructible_v<Types>);
-#else 
+/* CAre*<Types...> Pattern :
+        template <typename T> 
+        concept CAre* = (... && std::is_*<Types>);
+*/
 
-    template <typename... Types>
-    constexpr bool are_default_constructible = (... && std::is_default_constructible_v<Types>);
 
-#endif // CPP20
+template <template <typename> typename TypeTrait, typename... Types>
+concept CAreConcept = (... && TypeTrait<Types>::value);
+
+template <typename... Types>
+concept CAreDefaultConstructible = CAreConcept<std::is_default_constructible, Types...>;
+
+template <typename... Types>
+constexpr bool are_default_constructible_v = (... && std::is_default_constructible_v<Types>);
+
+template <typename... Types>
+concept CArePointers = CAreConcept<std::is_pointer, Types...>;
+
+
+
+

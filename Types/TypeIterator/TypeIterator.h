@@ -6,93 +6,11 @@
 #include <utility>
 
 #include "../Types.h"
+#include "TypeList.h"
 
 namespace Utility {
- 
-    template <typename... Types> 
-    struct type_list {
-    private:
-        template <typename Fn, size_t... Indices>
-        static auto Iterate(Fn&& fn, std::index_sequence<Indices...>) {
-            // Using a fold expression to invoke the lambda function on each type in the type_list.
-            return (fn.template operator()<std::tuple_element_t<Indices, std::tuple<Types...>>>(), ...);
-        }
-    public: 
-
-        template <typename Fn>
-        static auto Iterate(Fn&& fn) {
-            return Iterate(std::forward<Fn>(fn), std::make_index_sequence<sizeof...(Types)>());
-        }
-
-        template <typename T>
-        constexpr static bool Has() {
-            bool result = false;
-            ((result |= std::is_same_v<T, Types>), ...);
-            return result;
-        }
-
-        template <typename First, typename Second, typename... Rest>
-        constexpr static bool HasAny() {
-            bool result = false;
-            result |= Has<First>();
-            result |= Has<Second>();
-            ((result |= Has<Rest>()), ...);
-            return result;
-        }
-
-        template <typename First, typename Second, typename... Rest>
-        constexpr static bool HasAll() {
-            bool result = true;
-            result = result && Has<First>();
-            result = result && Has<Second>();
-            ((result = result && Has<Rest>()), ...);
-            return result;
-        }
-
-        using First = std::tuple_element_t<0, std::tuple<Types...>>;
-        using Last = std::tuple_element_t<sizeof...(Types) - 1, std::tuple<Types...>>;
-    };
-
-    template<typename...>
-    struct join {};
-
-    template<typename... Types, typename... Other>
-    struct join<type_list<Types...>, type_list<Other...>> { using type = type_list<Types..., Other...>; };
-
-    template<typename...>
-    struct remove_t_from_list {};
-
-    template<typename Target, typename... Types>
-    struct remove_t_from_list<Target, type_list<Types...>> { using type = type_list<Types...>; };
     
-    template<typename Target, typename Parameter, typename... Types>
-    struct remove_t_from_list<Target, type_list<Parameter, Types...>> {
-        using type = typename join<
-            std::conditional_t<
-            std::is_same_v<Target, Parameter>,
-            type_list<>,
-            type_list<Parameter>
-            >,
-            typename remove_t_from_list<Target, type_list<Types...>>::type
-        >::type;
-    };
-
-    template<typename... Types>
-    struct remove_types_from_list {};
-    
-    template<typename... Types>
-    struct remove_types_from_list<type_list<>, type_list<Types...>> { using type = type_list<Types...>; };
-    
-    template<typename Target, typename... RemainingTargets, typename... Types>
-    struct remove_types_from_list<type_list<Target, RemainingTargets...>, type_list<Types...>> {
-        using type = typename remove_t_from_list<
-            Target,
-            typename remove_types_from_list<
-            type_list<RemainingTargets...>,
-            type_list<Types...>
-            >::type
-        >::type;
-    };
+    // See Tests/Private/TypeIteratorTest.cpp for examples of using a type_iterator.
 
     /**
      * @brief Iterator for iterating a variadic number of types.
@@ -101,7 +19,7 @@ namespace Utility {
      * 
      * @note Essentially a wrapper for type_list with extended functionality. like exclusions, and stringifying.
     */
-    template <typename... Types>
+    template <typename... Types> 
     class type_iterator {
     private:
         using iterator = type_list<Types...>;
@@ -126,7 +44,7 @@ namespace Utility {
 
         static const constexpr size_t Count = sizeof...(Types);
 
-         /**
+        /**
          * @brief Iterate over an empty instance of all types in the iterator.
          * 
          * @tparam Fn Templated Lambda function -> [=|&|None]<typename>(){}; 
@@ -146,6 +64,7 @@ namespace Utility {
         static auto Iterate(Fn&& fn) {
             return iterator::Iterate(std::forward<Fn>(fn));
         }
+
         /**
          * @brief Iterate over an empty instance of all types not excluded that are present in the iterator.
          * 
@@ -197,4 +116,27 @@ namespace Utility {
         }
         
     };
+
+    using PrimitiveTypeIterator = type_iterator<
+        void, char, unsigned char, wchar_t, short int, unsigned short int,
+        int, unsigned int, long int, unsigned long int, long long int,
+        unsigned long long int, bool, float, double, long double>;
+
+    using PrimitiveTypeIteratorEx = type_iterator<
+        void, char, unsigned char, wchar_t, char16_t, char32_t, std::byte, short int, unsigned short int,
+        int, unsigned int, long int, unsigned long int, long long int,
+        unsigned long long int, bool, float, double, long double>;  
+
+    using CharTypeIterator = type_iterator<char, unsigned char, wchar_t>;
+
+    using CharTypeIteratorEx = type_iterator<char, unsigned char, wchar_t, char16_t, char32_t>;
+
+    using NumericTypeIterator = type_iterator<short int, unsigned short int,
+        int, unsigned int, long int, unsigned long int, long long int,
+        unsigned long long int, bool, float, double, long double>;
+   
+    using NumericTypeIteratorEx = type_iterator<std::byte, short int, unsigned short int,
+        int, unsigned int, long int, unsigned long int, long long int,
+        unsigned long long int, bool, float, double, long double>;
+
 }

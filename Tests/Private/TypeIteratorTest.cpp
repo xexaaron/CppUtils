@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "../../Types/TypeIterator/TypeIterator.h"
 
 using namespace Utility;
@@ -30,6 +31,7 @@ int main() {
     {
         LOG_HEADER("Normal iteration over all types");
 
+
         bool passed = true;
         std::string expected_type_array[5] = {
             "int", "float", "double", "char", "unsigned long long"
@@ -44,6 +46,9 @@ int main() {
         LOG_RESULT(passed, "Expected : int, float, double, char, unsigned long long");
     }
 
+
+
+
     {
         LOG_HEADER("Exclusive iteration");
         
@@ -52,6 +57,7 @@ int main() {
             "int", "unsigned long long" 
         };
         size_t i = 0;
+
 
         Iterables::Iterate<float, double, char>([&]<typename T>() { // Exclusive iteration
             std::cout << "Type: " << GetTypename<T>() << "\n"; 
@@ -69,7 +75,6 @@ int main() {
             "unsigned long long", "int"
         };
         size_t i = 0;
-
         Iterables::Subset<unsigned long long, int>::Iterate([&]<typename T>() { // Subset iteration over all types in the subset
             std::cout << "Type: " << GetTypename<T>() << "\n"; 
             passed = GetTypename<T>() == expected_type_array[i++];
@@ -95,6 +100,16 @@ int main() {
         std::string expected = "int, float, double, char, unsigned long long";
         LOG_RESULT(expected == Iterables::String(true), "Expected string : int, float, double, char, unsigned long long");
     }
-    
+
+    {
+        LOG_HEADER("PrimitiveTypeIteratorEx");
+
+        PrimitiveTypeIteratorEx::Iterate([]<typename T>(){
+            std::cout << GetTypename<T>() << std::endl;
+        });
+
+        LOG_RESULT(true, "");
+    }
+
     return 0;
 }
