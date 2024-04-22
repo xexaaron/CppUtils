@@ -8,6 +8,9 @@
 #include "../Types.h"
 
 namespace Utility {
+
+    // based on https://stackoverflow.com/questions/67347545/compile-time-set-subtraction-of-two-tuples
+
     template <typename... Types> 
     struct type_list {
     private:
