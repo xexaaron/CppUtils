@@ -9,7 +9,6 @@
 
 namespace Utility {
 
-    // based on https://stackoverflow.com/questions/67347545/compile-time-set-subtraction-of-two-tuples
 
     template <typename... Types> 
     struct type_list {
@@ -52,7 +51,10 @@ namespace Utility {
 
         using First = std::tuple_element_t<0, std::tuple<Types...>>;
         using Last = std::tuple_element_t<sizeof...(Types) - 1, std::tuple<Types...>>;
+        using AsTuple = std::tuple<Types...>;
     };
+    
+    // based on https://stackoverflow.com/questions/67347545/compile-time-set-subtraction-of-two-tuples
 
     template<typename...>
     struct join {};
@@ -94,4 +96,5 @@ namespace Utility {
             >::type
         >::type;
     };
+
 }

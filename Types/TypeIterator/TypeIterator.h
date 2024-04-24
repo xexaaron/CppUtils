@@ -26,13 +26,9 @@ namespace Utility {
     public:
         using First = typename iterator::First;
         using Last = typename iterator::Last;
-        
-        /**
-         * @brief 0 Based indexing
-         * @tparam N index of type
-         */
-        template <size_t N>
+        template <size_t N> // 0 based indexing
         using Type = typename std::tuple_element_t<N, std::tuple<Types...>>;
+        using AsTuple = typename iterator::AsTuple;
 
         /**
          * @brief Generate a new type_iterator alias for a list of types. 
@@ -90,7 +86,6 @@ namespace Utility {
             return iterables::Iterate(std::forward<Fn>(fn));
         }
         
-
         template <typename T>
         constexpr static bool Has() { return iterator::template Has<T>();}
 
@@ -117,26 +112,28 @@ namespace Utility {
         
     };
 
-    using PrimitiveTypeIterator = type_iterator<
+
+
+
+    struct PrimitiveTypeIterator : type_iterator<
         void, char, unsigned char, wchar_t, short int, unsigned short int,
         int, unsigned int, long int, unsigned long int, long long int,
-        unsigned long long int, bool, float, double, long double>;
+        unsigned long long int, bool, float, double, long double> {};
 
-    using PrimitiveTypeIteratorEx = type_iterator<
+    struct PrimitiveTypeIteratorEx : type_iterator<
         void, char, unsigned char, wchar_t, char16_t, char32_t, std::byte, short int, unsigned short int,
         int, unsigned int, long int, unsigned long int, long long int,
-        unsigned long long int, bool, float, double, long double>;  
+        unsigned long long int, bool, float, double, long double> {};
 
-    using CharTypeIterator = type_iterator<char, unsigned char, wchar_t>;
+    struct CharTypeIterator : type_iterator<char, unsigned char, wchar_t> {};
 
-    using CharTypeIteratorEx = type_iterator<char, unsigned char, wchar_t, char16_t, char32_t>;
+    struct CharTypeIteratorEx : type_iterator<char, unsigned char, wchar_t, char16_t, char32_t> {};
 
-    using NumericTypeIterator = type_iterator<short int, unsigned short int,
+    struct NumericTypeIterator : type_iterator<short int, unsigned short int,
         int, unsigned int, long int, unsigned long int, long long int,
-        unsigned long long int, bool, float, double, long double>;
-   
-    using NumericTypeIteratorEx = type_iterator<std::byte, short int, unsigned short int,
-        int, unsigned int, long int, unsigned long int, long long int,
-        unsigned long long int, bool, float, double, long double>;
+        unsigned long long int, bool, float, double, long double> {};
 
+    struct NumericTypeIteratorEx : type_iterator<std::byte, short int, unsigned short int,
+        int, unsigned int, long int, unsigned long int, long long int,
+        unsigned long long int, bool, float, double, long double> {};
 }

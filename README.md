@@ -7,4 +7,5 @@
 ## TODO
 
 * implement breaking from fold expression in type_iterator Iterate
-* once this is done DynamicTypeObject will be ready.
+
+## Notes

@@ -9,8 +9,10 @@ namespace Utility {
      *  @return T{}; 
     */
     class Null {
+    public:
         template <typename T>
         operator T() const { return T{}; }
+    private:
     };
 
     /**
