@@ -13,6 +13,12 @@ namespace Utility {
     template <typename... Types> 
     struct type_list {
     private:
+        /*      The return result of the iteration can be manipulated by applying 
+            an operand to the right hand side of the fold expression.
+            For Example : (fn.template operator()<...>(), OPERAND ...). if OPERAND is '+' 
+            then the return value will be added to the next return value a 'sizeof...(Types) - 1' times.
+            Further, say we return 5 and count is 5 then the usage of '+' as an operand will return 25.
+        */
         template <typename Fn, size_t... Indices>
         static auto Iterate(Fn&& fn, std::index_sequence<Indices...>) {
             return (fn.template operator()<std::tuple_element_t<Indices, std::tuple<Types...>>>(), ...);

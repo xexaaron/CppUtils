@@ -54,7 +54,8 @@ namespace Utility {
          *      return Something; 
          *  }); @endcode
          * 
-         * @result User defined return type. See 'type_list private: Iterate' above for more details 
+         * @result User defined auto deduced return type. 
+         * @result For more complex iteration, see type_list::Iterate private method. More details there.
          */
         template <typename Fn>
         static auto Iterate(Fn&& fn) {
@@ -77,7 +78,7 @@ namespace Utility {
          *      return Something; 
          *  }); @endcode
          * 
-         * @result User defined return type. See 'type_list private: Iterate' above for more details 
+         * @result User defined auto deduced return type. 
          */
         template <typename Exclude, typename... Exclusions, typename Fn>
         static auto Iterate(Fn&& fn) {
