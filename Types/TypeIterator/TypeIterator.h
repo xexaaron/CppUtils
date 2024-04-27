@@ -89,11 +89,11 @@ namespace Utility {
         template <typename T>
         constexpr static bool Has() { return iterator::template Has<T>();}
 
-        template <typename First, typename Second, typename... Rest>
-        constexpr static bool HasAny() { return iterator::template HasAny<First, Second, Rest...>();}
+        template <typename... Any>
+        constexpr static bool HasAny() { return iterator::template HasAny<Any...>();}
 
-        template <typename First, typename Second, typename... Rest>
-        constexpr static bool HasAll() { return iterator::template HasAll<First, Second, Rest...>();}
+        template <typename... All>
+        constexpr static bool HasAll() { return iterator::template HasAll<All...>();}
 
         static std::string String(bool just_types = false) {
             std::string out;

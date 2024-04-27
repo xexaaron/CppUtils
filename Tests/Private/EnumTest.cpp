@@ -47,5 +47,8 @@ int main() {
 
 
     NullStream.close();
+
+    TestBitwiseOperations();
+
     return 0;
 }

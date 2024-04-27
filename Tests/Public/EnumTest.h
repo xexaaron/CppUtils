@@ -83,7 +83,26 @@ static std::chrono::nanoseconds elapsed;
         elapsed = end - start; \
     }
 
+void TestBitwiseOperations() {
+    ETest value1 = ETest::VAL_ONE; 
+    ETest value2 = ETest::VAL_TWO;
 
+    // Perform bitwise AND
+    ETest andResult = value1 & value2;
+    std::cout << "Bitwise AND: " << value1.String() << " & " << value2.String() << " = " << andResult.String() << std::endl;
+
+    // Perform bitwise OR
+    ETest orResult = value1 | value2;
+    std::cout << "Bitwise OR: " << value1.String() << " | " << value2.String() << " = " << orResult.String() << std::endl;
+
+    // Perform bitwise XOR
+    ETest xorResult = value1 ^ value2;
+    std::cout << "Bitwise XOR: " << value1.String() << " ^ " << value2.String() << " = " << xorResult.String() << std::endl;
+
+    // Perform bitwise NOT
+    ETest notResult = ~value1;
+    std::cout << "Bitwise NOT: ~" << value1.String() << " = " << notResult.String() << std::endl;
+}
 
 void CompareTestResult(long long avgAdvancedEnumTime, long long avgEnumSwitchTime) {
     const char* out = avgAdvancedEnumTime > avgEnumSwitchTime ? "Basic enum switch case printing" : "Advanced enum iteration printing";

@@ -31,21 +31,17 @@ namespace Utility {
             return result;
         }
 
-        template <typename First, typename Second, typename... Rest>
+        template <typename... Any>
         constexpr static bool HasAny() {
             bool result = false;
-            result |= Has<First>();
-            result |= Has<Second>();
-            ((result |= Has<Rest>()), ...);
+            ((result |= Has<Any>()), ...);
             return result;
         }
 
-        template <typename First, typename Second, typename... Rest>
+        template <typename... All>
         constexpr static bool HasAll() {
             bool result = true;
-            result = result && Has<First>();
-            result = result && Has<Second>();
-            ((result = result && Has<Rest>()), ...);
+            ((result = result && Has<All>()), ...);
             return result;
         }
 

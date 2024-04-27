@@ -73,20 +73,21 @@
         }                                                                                                                      \
         inline friend eName operator&(const eName &lhs, const eName &rhs) noexcept                                             \
         {                                                                                                                      \
-            return static_cast<eName>(lhs._Value & rhs._Value);                                                                \
+            return eName(static_cast<eType>(lhs._Value & rhs._Value));                                                         \
         }                                                                                                                      \
         inline friend eName operator|(const eName &lhs, const eName &rhs) noexcept                                             \
         {                                                                                                                      \
-            return static_cast<eName>(lhs._Value | rhs._Value);                                                                \
+            return eName(static_cast<eType>(lhs._Value | rhs._Value));                                                         \
         }                                                                                                                      \
         inline friend eName operator^(const eName &lhs, const eName &rhs) noexcept                                             \
         {                                                                                                                      \
-            return static_cast<eName>(lhs._Value ^ rhs._Value);                                                                \
+            return eName(static_cast<eType>(lhs._Value ^ rhs._Value));                                                         \
         }                                                                                                                      \
         inline friend eName operator~(const eName &value) noexcept                                                             \
         {                                                                                                                      \
-            return static_cast<eName>(~value._Value);                                                                          \
+            return eName(static_cast<eType>(~value._Value));                                                                   \
         }                                                                                                                      \
+                                                                                                                               \
     private:                                                                                                                   \
         _##eName _Value = _##eName::ENULL;                                                                                     \
     }
